@@ -23,11 +23,9 @@ module JellyfishMiq
 
       def product_questions
         [
-          { name: :uri_namespace, value_type: :string, field: :text, label: 'URI Namespace', required: true },
-          { name: :uri_class, value_type: :string, field: :text, label: 'URI Class', required: true },
-          { name: :uri_instance, value_type: :string, field: :text, label: 'URI Instance', required: true },
-          { name: :auto_approve, value_type: :boolean, field: :checkbox, label: 'Auto Approve Requests', required: false },
-          { name: :environment, value_type: :string, field: :environments, label: 'MIQ Environment', required: false }
+          { name: :uri_namespace, value_type: :string, field: :text, label: 'Namespace', required: true },
+          { name: :uri_class, value_type: :string, field: :text, label: 'Class', required: true },
+          { name: :uri_instance, value_type: :string, field: :text, label: 'Instance', required: true }
         ]
       end
 

@@ -25,6 +25,7 @@ module JellyfishMiq
 
       def questions
         [
+          { name: :host, value_type: :string, field: :text, label: 'MIQ Host', required: true },
           { name: :username, value_type: :string, field: :text, label: 'MIQ Username', required: true },
           { name: :password, value_type: :password, field: :password, label: 'MIQ Password', required: :if_new }
         ]

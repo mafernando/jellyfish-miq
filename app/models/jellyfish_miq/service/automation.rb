@@ -14,21 +14,42 @@ module JellyfishMiq
 
       def provision
         handle_errors do
-          # generate mock provisioning details with faker
+          miq_host = self.provider.answers.where(name: 'host').last.value
+          miq_username = self.provider.answers.where(name: 'username').last.value
+          miq_password = self.provider.answers.where(name: 'password').last.value
+          miq_namespace = self.answers.where(name: 'uri_namespace').last.value
+          miq_class = self.answers.where(name: 'uri_class').last.value
+          miq_instance = self.answers.where(name: 'uri_instance').last.value
+
+          timeout = 15
+          auth = { username: 'admin', password: 'r3dh4t1!' }
+          automation_endpoint = "https://#{miq_host}/api/automation_requests"
+          headers = { 'Content-Type' => 'application/json', 'Accept' => 'application/json' }
+
+          uri_parts = {}
+          uri_parts['namespace'] = miq_namespace
+          uri_parts['class'] = miq_class
+          uri_parts['instance'] = miq_instance
+          body = { uri_parts: uri_parts, requester: { auto_approve: true } }.to_json
+
+          # Make REST call to MIQ API
+          response = {}
+          request_id = nil
+          begin
+            response = HTTParty.post(automation_endpoint, basic_auth: auth, headers: headers, body: body, timeout: timeout, verify: false)
+            request_id = response.dig('results',0,'id')
+          rescue
+          end
+
+          # Setup details to be saved
           details = {
-            domain: Faker::Internet.domain_name,
-            ip_address: Faker::Internet.public_ip_v4_address,
-            username: 'admin',
-            password: Faker::Internet.password(10)
+              request_id: request_id
           }
 
-          # save db outputs from product details
-          save_outputs(details, [['Domain', :domain],
-                                 ['Public IP', :ip_address],
-                                 ['Username', :username],
-                                 ['Password', :password]], ValueTypes::TYPES[:string])
+          # Save details to db
+          save_outputs(details, [['Request ID', :request_id]], ValueTypes::TYPES[:string])
 
-          # update status of service to running
+          # Update status of service to running
           update_status(::Service.defined_enums['status']['running'], 'running')
         end
       end
