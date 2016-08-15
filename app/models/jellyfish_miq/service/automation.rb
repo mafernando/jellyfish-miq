@@ -21,8 +21,8 @@ module JellyfishMiq
           miq_class = self.answers.where(name: 'uri_class').last.value
           miq_instance = self.answers.where(name: 'uri_instance').last.value
 
-          timeout = 15
-          auth = { username: 'admin', password: 'r3dh4t1!' }
+          timeout = 60
+          auth = { username: miq_username, password: miq_password }
           automation_endpoint = "https://#{miq_host}/api/automation_requests"
           headers = { 'Content-Type' => 'application/json', 'Accept' => 'application/json' }
 
